@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UserSearchService } from './user-search.service';
 
 @Component({
   selector: 'app-user-search',
   templateUrl: './user-search.component.html',
-  styleUrls: ['./user-search.component.scss']
+  styleUrls: ['./user-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserSearchComponent implements OnInit {
 

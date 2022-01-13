@@ -1,2 +1,6 @@
 <app-user-detail></app-user-detail>
-<app-paginator></app-paginator>
+<app-paginator
+  *ngIf="numberOfPages"
+  [numberOfPages]="numberOfPages"
+>
+</app-paginator>
