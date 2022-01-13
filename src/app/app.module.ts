@@ -6,10 +6,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UserSearchService } from './feature/user-search/user-search.service';
 import { UserSearchComponent } from './feature/user-search/user-search.component';
+import { UserContainerComponent } from './feature/user-container/user-container.component';
+import { UserDetailComponent } from './feature/user-container/user-detail/user-detail.component';
+import { PaginatorComponent } from './feature/user-container/paginator/paginator.component';
 @NgModule({
   declarations: [
     AppComponent,
-    UserSearchComponent
+    UserSearchComponent,
+    UserContainerComponent,
+    UserDetailComponent,
+    PaginatorComponent
   ],
   imports: [
     BrowserModule,
