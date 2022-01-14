@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { User } from '../user-search/user';
 import { UserSearchService } from '../user-search/user-search.service';
 
@@ -12,6 +13,9 @@ export class UserContainerComponent implements OnInit {
 
   numberOfPages!: number;
   users: User[] = [];
+
+  error$: Observable<string> = this.userSearchService.error$;
+  loading$: Observable<boolean> = this.userSearchService.loading$;
 
   constructor(private userSearchService: UserSearchService, private changeRef: ChangeDetectorRef) { }
 

@@ -1,4 +1,20 @@
-<app-user-detail *ngFor="let user of users" [user]="user"></app-user-detail>
+
+<ng-container *ngIf="error$ | async as error">
+  <div class="p-4 text-orange-700 bg-orange-100 border-l-4 border-orange-500" role="alert">
+    <p class="font-bold">Be Warned</p>
+    <p>Something not ideal might be happening.</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="(loading$ | async) && !users">
+  <div class="flex items-center justify-center mt-8">
+      <div class="w-40 h-40 border-t-4 border-b-4 border-blue-400 rounded-full animate-spin"></div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="users">
+  <app-user-detail *ngFor="let user of users" [user]="user"></app-user-detail>
+</ng-container>
 
 <app-paginator
   *ngIf="numberOfPages"
