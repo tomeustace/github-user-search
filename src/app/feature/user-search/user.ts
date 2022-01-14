@@ -1,5 +1,9 @@
 export interface User {
     login: string,
+    location: string,
+    bio: string,
+    company: string,
+    followers: number,
     id: number,
     node_id: string,
     avatar_url: string,

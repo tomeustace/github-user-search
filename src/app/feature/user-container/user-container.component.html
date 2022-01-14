@@ -1,4 +1,5 @@
-<app-user-detail></app-user-detail>
+<app-user-detail *ngFor="let user of users" [user]="user"></app-user-detail>
+
 <app-paginator
   *ngIf="numberOfPages"
   [numberOfPages]="numberOfPages"
