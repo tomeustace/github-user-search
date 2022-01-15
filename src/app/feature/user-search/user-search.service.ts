@@ -33,6 +33,9 @@ export class UserSearchService {
   private loadingSubject = new Subject<boolean>();
   public loading$ = this.loadingSubject.asObservable();
 
+  private totalCountSubject = new Subject<number>();
+  public totalCount$ = this.totalCountSubject.asObservable();
+
   constructor(private httpClient: HttpClient) {}
 
   searchUsers(searchValue: string | null, page?: number) {
@@ -62,6 +65,10 @@ export class UserSearchService {
         delay(250),
         tap((response: HttpResponse<SearchResult>) => {
           this.extractLinks(response);
+        }),
+        tap((response: HttpResponse<SearchResult>) => {
+          // emit total number of users found
+          this.totalCountSubject.next(response.body?.total_count as number);
         }),
         switchMap((response: HttpResponse<SearchResult>) => {
           if (response) {
@@ -156,4 +163,5 @@ export class UserSearchService {
       this.pagesSubject.next(+numberOfPages);
     }
   }
+
 }

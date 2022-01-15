@@ -1,4 +1,4 @@
-<div (click)="navigateToUser(user)" class="max-w-sm m-4 overflow-hidden bg-white rounded-lg shadow-lg user-card">
+<div (click)="navigateToUser(user)" class="max-w-sm m-4 overflow-hidden transition duration-500 transform bg-white rounded-lg shadow-lg user-card hover:scale-110">
   <img class="object-cover object-center w-full h-56" [src]="user.avatar_url" alt="avatar">
   <div class="px-6 py-4">
     <h1 class="text-2xl font-semibold text-gray-800">{{ user.login }}</h1>

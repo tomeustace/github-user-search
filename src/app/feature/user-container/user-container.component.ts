@@ -12,6 +12,7 @@ import { UserSearchService } from '../user-search/user-search.service';
 export class UserContainerComponent implements OnInit {
 
   numberOfPages!: number;
+  totalUserCount!: number;
   noUsersFound!: boolean;
   users!: User[];
 
@@ -34,6 +35,11 @@ export class UserContainerComponent implements OnInit {
 
     this.userSearchService.search$.subscribe((numberOfPages: number) => {
       this.numberOfPages = numberOfPages;
+      this.changeRef.detectChanges();
+    });
+
+    this.userSearchService.totalCount$.subscribe((totalUserCount: number) => {
+      this.totalUserCount = totalUserCount;
       this.changeRef.detectChanges();
     });
   }
