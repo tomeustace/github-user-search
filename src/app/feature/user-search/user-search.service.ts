@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { User } from './user';
-import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, delay, switchMap, tap } from 'rxjs/operators';
 import {
-  BehaviorSubject,
-  combineLatest,
   forkJoin,
   Observable,
   of,
@@ -19,20 +17,21 @@ import { SearchResult } from './search';
 export class UserSearchService {
   private readonly url = 'https://api.github.com/search/users?';
   private readonly userUrl = 'https://api.github.com/users/';
+  private readonly PER_PAGE = 4;
 
   private searchValue!: string;
 
   private pagesSubject = new Subject<number>();
-  search$ = this.pagesSubject.asObservable();
+  public search$ = this.pagesSubject.asObservable();
 
   private usersSubject = new Subject<User[] | null>();
-  users$ = this.usersSubject.asObservable();
+  public users$ = this.usersSubject.asObservable();
 
   private errorSubject = new Subject<string>();
-  error$ = this.errorSubject.asObservable();
+  public error$ = this.errorSubject.asObservable();
 
   private loadingSubject = new Subject<boolean>();
-  loading$ = this.loadingSubject.asObservable();
+  public loading$ = this.loadingSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {}
 
@@ -45,9 +44,9 @@ export class UserSearchService {
     let queryUrl;
 
     if (page) {
-      queryUrl = `${this.url}q=${this.searchValue}&per_page=2&page=${page}`;
+      queryUrl = `${this.url}q=${this.searchValue}&per_page=${this.PER_PAGE}&page=${page}`;
     } else {
-      queryUrl = `${this.url}q=${this.searchValue}&per_page=2`;
+      queryUrl = `${this.url}q=${this.searchValue}&per_page=${this.PER_PAGE}`;
     }
 
     this.httpClient
@@ -70,6 +69,7 @@ export class UserSearchService {
               return of(null);
             }
 
+            // Create an Observable for each user profile request
             const loginIds = response.body?.items.map((user) => {
               return this.httpClient.get(`${this.userUrl}${user.login}`).pipe(
                 catchError((error: any) =>
@@ -96,7 +96,7 @@ export class UserSearchService {
                         error
                       );
                     }
-                    throw new Error(error);
+                    console.error(error.message);
                   })
                 )
               ) as Observable<any>;
@@ -123,7 +123,6 @@ export class UserSearchService {
   }
 
   pageUsers(page: number) {
-    console.log("pageUsers", page);
     this.searchUsers(null, page);
   }
 
