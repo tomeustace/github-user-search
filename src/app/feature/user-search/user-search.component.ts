@@ -14,7 +14,9 @@ export class UserSearchComponent implements OnInit {
   ngOnInit(): void { }
 
   searchUsers(searchValue: string) {
-    this.userSearchService.searchUsers(searchValue);
+    if (searchValue.trim()) {
+      this.userSearchService.searchUsers(searchValue);
+    }
   }
 
 }

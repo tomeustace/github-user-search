@@ -1,8 +1,15 @@
 
-<ng-container *ngIf="error$ | async as error">
-  <div class="p-4 text-orange-700 bg-orange-100 border-l-4 border-orange-500" role="alert">
-    <p class="font-bold">Be Warned</p>
-    <p>Something not ideal might be happening.</p>
+<ng-container *ngIf="(error$ | async) as error">
+  <div class="flex flex-col items-center justify-center p-4 mt-8 text-orange-700 bg-orange-100 border-orange-500" role="alert">
+    <p class="font-bold">Something went wrong</p>
+    <p>We can't retrieve users at this time, please try again later.</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="noUsersFound === true">
+  <div class="flex flex-col items-center justify-center p-4 mt-8 text-orange-700 bg-orange-100 border-orange-500" role="alert">
+    <p class="font-bold">No Users Found</p>
+    <p>We couldn't find any users matching your search term.</p>
   </div>
 </ng-container>
 
@@ -17,7 +24,7 @@
 </ng-container>
 
 <app-paginator
-  *ngIf="numberOfPages"
+  *ngIf="users && numberOfPages > 1"
   [numberOfPages]="numberOfPages"
 >
 </app-paginator>

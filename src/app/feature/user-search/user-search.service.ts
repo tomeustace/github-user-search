@@ -25,7 +25,7 @@ export class UserSearchService {
   private pagesSubject = new Subject<number>();
   search$ = this.pagesSubject.asObservable();
 
-  private usersSubject = new BehaviorSubject<User[] | null>(null);
+  private usersSubject = new Subject<User[] | null>();
   users$ = this.usersSubject.asObservable();
 
   private errorSubject = new Subject<string>();
@@ -36,7 +36,7 @@ export class UserSearchService {
 
   constructor(private httpClient: HttpClient) {}
 
-  searchUsers(searchValue: string | null, page?: string) {
+  searchUsers(searchValue: string | null, page?: number) {
     if (searchValue) {
       this.searchValue = searchValue;
     }
@@ -45,9 +45,9 @@ export class UserSearchService {
     let queryUrl;
 
     if (page) {
-      queryUrl = `${this.url}q=${searchValue}&per_page=2&${page}`;
+      queryUrl = `${this.url}q=${this.searchValue}&per_page=2&page=${page}`;
     } else {
-      queryUrl = `${this.url}q=${searchValue}&per_page=2`;
+      queryUrl = `${this.url}q=${this.searchValue}&per_page=2`;
     }
 
     this.httpClient
@@ -60,13 +60,17 @@ export class UserSearchService {
             throw new Error(error);
           })
         ),
-        delay(1000),
+        delay(250),
         tap((response: HttpResponse<SearchResult>) => {
           this.extractLinks(response);
         }),
         switchMap((response: HttpResponse<SearchResult>) => {
           if (response) {
-            const loginIds = response?.body?.items?.map((user) => {
+            if (response.body?.items.length === 0) {
+              return of(null);
+            }
+
+            const loginIds = response.body?.items.map((user) => {
               return this.httpClient.get(`${this.userUrl}${user.login}`).pipe(
                 catchError((error: any) =>
                   throwError(() => {
@@ -106,11 +110,11 @@ export class UserSearchService {
         })
       )
       .subscribe((response: User[] | null) => {
+        this.loadingSubject.next(false);
         if (response) {
-          this.loadingSubject.next(false);
           this.usersSubject.next(response);
         } else {
-          console.log('No users found');
+          this.usersSubject.next(null);
         }
       }),
       (error: any) => {
@@ -118,7 +122,8 @@ export class UserSearchService {
       };
   }
 
-  pageUsers(page: string) {
+  pageUsers(page: number) {
+    console.log("pageUsers", page);
     this.searchUsers(null, page);
   }
 
@@ -145,9 +150,11 @@ export class UserSearchService {
       }
     }
 
-    const pageTokens = links.last.split('&');
-    const numberOfPages =
-      pageTokens[pageTokens.length - 1].match(/page=(\d+).*$/)[1];
-    this.pagesSubject.next(+numberOfPages);
+    if (links.last) {
+      const pageTokens = links.last.split('&');
+      const numberOfPages =
+        pageTokens[pageTokens.length - 1].match(/page=(\d+).*$/)[1];
+      this.pagesSubject.next(+numberOfPages);
+    }
   }
 }

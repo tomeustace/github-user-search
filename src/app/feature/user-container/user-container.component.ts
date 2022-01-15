@@ -12,7 +12,8 @@ import { UserSearchService } from '../user-search/user-search.service';
 export class UserContainerComponent implements OnInit {
 
   numberOfPages!: number;
-  users: User[] = [];
+  noUsersFound!: boolean;
+  users!: User[];
 
   error$: Observable<string> = this.userSearchService.error$;
   loading$: Observable<boolean> = this.userSearchService.loading$;
@@ -22,7 +23,12 @@ export class UserContainerComponent implements OnInit {
   ngOnInit(): void {
 
     this.userSearchService.users$.subscribe((users: any | null) => {
-      this.users = users;
+      if (users) {
+        this.users = users;
+        this.noUsersFound = false;
+      } else {
+        this.noUsersFound = true;
+      }
       this.changeRef.detectChanges();
     });
 
