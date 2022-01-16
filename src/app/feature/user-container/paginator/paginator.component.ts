@@ -45,7 +45,7 @@ export class PaginatorComponent implements OnInit {
    * @param page
    */
   pageUsers(page: number) {
-    this.activePage = page - 1;
+    this.activePage = page !== 1 ? page - 1 : page;
     this.userSearchService.pageUsers(page - 1);
     this.changeRef.detectChanges();
   }
