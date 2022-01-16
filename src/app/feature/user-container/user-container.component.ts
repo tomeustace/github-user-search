@@ -33,7 +33,7 @@ export class UserContainerComponent implements OnInit {
       this.changeRef.detectChanges();
     });
 
-    this.userSearchService.search$.subscribe((numberOfPages: number) => {
+    this.userSearchService.pages$.subscribe((numberOfPages: number) => {
       this.numberOfPages = numberOfPages;
       this.changeRef.detectChanges();
     });

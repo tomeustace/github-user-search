@@ -33,16 +33,32 @@ export class PaginatorComponent implements OnInit {
       ]);
     } else {
       this.pages = Array.from(Array(this.numberOfPages).keys());
-      this.pages = this.pages.map((page) => page + 1);
-      console.log("PaginatorComponent.ngAfterViewInit()", this.pages);
     }
 
+    // shift index by 1 to start from 1 instead of 0
+    this.pages = this.pages.map((page) => page !== '...' ? page + 1 : page);
     this.changeRef.detectChanges();
   }
 
+  /**
+   * Request next page from service
+   * @param page
+   */
   pageUsers(page: number) {
     this.activePage = page - 1;
     this.userSearchService.pageUsers(page - 1);
+    this.changeRef.detectChanges();
+  }
+
+  nextPage() {
+    this.pageUsers(this.activePage + 1);
+    this.activePage = this.activePage + 1;
+    this.changeRef.detectChanges();
+  }
+
+  previousPage() {
+    this.pageUsers(this.activePage - 1);
+    this.activePage = this.activePage - 1;
     this.changeRef.detectChanges();
   }
 }

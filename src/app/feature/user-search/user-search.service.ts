@@ -22,7 +22,7 @@ export class UserSearchService {
   private searchValue!: string;
 
   private pagesSubject = new Subject<number>();
-  public search$ = this.pagesSubject.asObservable();
+  public pages$ = this.pagesSubject.asObservable();
 
   private usersSubject = new Subject<User[] | null>();
   public users$ = this.usersSubject.asObservable();
@@ -38,6 +38,12 @@ export class UserSearchService {
 
   constructor(private httpClient: HttpClient) {}
 
+  /**
+   * Search for users with the given search term
+   * If no searchValue use existing searchValue
+   * @param searchValue
+   * @param page
+   */
   searchUsers(searchValue: string | null, page?: number) {
     if (searchValue) {
       this.searchValue = searchValue;
@@ -71,6 +77,7 @@ export class UserSearchService {
           this.totalCountSubject.next(response.body?.total_count as number);
         }),
         switchMap((response: HttpResponse<SearchResult>) => {
+          // TODO Extract below to lettable operator
           if (response) {
             if (response.body?.items.length === 0) {
               return of(null);
@@ -108,6 +115,7 @@ export class UserSearchService {
                 )
               ) as Observable<any>;
             });
+
             if (loginIds) {
               // need to get description / bio from users and add to user data
               return forkJoin(loginIds) as Observable<User[]>;
@@ -129,10 +137,19 @@ export class UserSearchService {
       };
   }
 
+  /**
+   * Trigger a new request for users with the given page number
+   * @param page
+   */
   pageUsers(page: number) {
     this.searchUsers(null, page);
   }
 
+  /**
+   * Extract the links from the response header and emit user container
+   * @param response HTTP response
+   * @returns
+   */
   private extractLinks(response: HttpResponse<SearchResult>) {
     let link = response.headers.get('Link');
     if (!link) {
@@ -140,9 +157,10 @@ export class UserSearchService {
       return;
     }
 
-    // Split parts by comma
-    var parts = link?.split(',');
-    var links: any = {};
+    // BELOW IS TAKEN FROM STACKOVERFLOW
+    // https://stackoverflow.com/questions/39272081/how-to-extract-the-next-and-last-page-from-a-github-api-link-header
+    const parts = link?.split(',');
+    const links: any = {};
     // Parse each part into a named link
     if (parts) {
       for (var i = 0; i < parts?.length; i++) {
